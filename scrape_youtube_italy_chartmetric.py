@@ -9,7 +9,7 @@ from chartmetric import ChartMetricApi
 import os
 import sys
 
-category = "Youtube"
+category = "youtube"
 country = "Italy"
 
 from dotenv import load_dotenv
@@ -46,7 +46,11 @@ def writeCharts(country_id, charts_date):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    output_file = open(f'{output_dir}/output_{category}_{country_id}_{charts_date}.csv', 'w+', newline='', encoding='utf8')
+    output_path = f'{output_dir}/output_{category}_{country_id}_{charts_date}.csv'
+    if os.path.exists(output_path):
+        return
+
+    output_file = open(output_path, 'w+', newline='', encoding='utf8')
     writer = csv.writer(output_file)
 
     writer.writerow(["#", "Pos", "Evo", "Titolo", "Artista", "ISRC", "visualizzazioni"])
@@ -67,7 +71,51 @@ def writeCharts(country_id, charts_date):
         output_file.flush()
         # print(row)
 
-if __name__ == '__main__':
+def scrape_youtube(start_date, end_date):
+    global DriversPool
+
+    # Get the command line arguments
+    run_mode = "date-range"
+
+    # initialize chart metric api object
+    chartmetricApi = ChartMetricApi()
+
+    if (run_mode == "date-range"):
+        # in case of date-range mode
+        if (start_date == ""):
+            first_day = datetime.date(now.year, now.month, 1)
+            start_date = first_day.strftime("%Y-%m-%d")
+
+        try:
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        except Exception as err:
+            print("Invalid date string. please try again")
+            print(err)
+
+        start_date = datetime.date(start_date.year, start_date.month, start_date.day)
+
+        # Find the next Thursday
+        days_to_thursday = (3 - start_date.weekday()) % 7
+        start_date = start_date + datetime.timedelta(days=days_to_thursday)
+
+        if end_date is None:
+            end_date = datetime.date(now.year, now.month, now.day)
+        delta = datetime.timedelta(days=7)
+
+        while start_date <= end_date:
+            print("running for", start_date.strftime("%Y-%m-%d"))
+            writeCharts(country, start_date.strftime("%Y-%m-%d"))
+            start_date += delta
+
+    else:
+        # in case of one-time mode
+
+        print("running for", now.strftime("%Y-%m-%d"))
+        writeCharts(country, now.strftime("%Y-%m-%d"))
+
+
+
+if __name__ == '__main__s':
 
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d %H-%M-%S")

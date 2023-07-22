@@ -1,2 +1,1 @@
-python scraper.py
-pause
+python server.py

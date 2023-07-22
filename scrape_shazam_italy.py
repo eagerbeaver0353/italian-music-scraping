@@ -9,7 +9,7 @@ from spotify import SpotifyApi
 import os
 import sys
 
-category = "Shazam"
+category = "shazam"
 country = "Italy"
 
 from dotenv import load_dotenv
@@ -135,7 +135,11 @@ def writeCharts(country_id, charts_date):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    output_file = open(f'{output_dir}/output_{category}_{country_id}_{chart_date}.csv', 'w+', newline='', encoding='utf8')
+    output_path = f'{output_dir}/output_{category}_{country_id}_{chart_date}.csv'
+    if os.path.exists(output_path):
+        return
+
+    output_file = open(output_path, 'w+', newline='', encoding='utf8')
     writer = csv.writer(output_file)
 
     writer.writerow(["position", "title", "artists", "isrc"])
@@ -152,7 +156,56 @@ def writeCharts(country_id, charts_date):
         output_file.flush()
         print(row)
 
-if __name__ == '__main__':
+def scrape_shazam(start_date, end_date) :
+    global DriversPool
+
+    now = datetime.datetime.now()
+    date_string = now.strftime("%Y-%m-%d %H-%M-%S")
+
+    print("======== Starting the App ==========")
+
+    # Get the command line arguments
+
+    run_mode = "date-range"
+
+    if (run_mode == "date-range"):
+        # in case of date-range mode
+        if (start_date == ""):
+            first_day = datetime.date(now.year, now.month, 1)
+            start_date = first_day.strftime("%Y-%m-%d")
+
+        try:
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        except Exception as err:
+            print("Invalid date string. please try again")
+            print(err)
+
+        start_date = datetime.date(start_date.year, start_date.month, start_date.day)
+        if end_date is None:
+            end_date = datetime.date(now.year, now.month, now.day)
+        delta = datetime.timedelta(days=1)
+
+        DriversSize = 1
+        DriversPool = [Driver() for _ in range(DriversSize)]
+
+        loginProcess(random.randint(10000, 99999))
+
+        while start_date <= end_date:
+            print("running for", start_date.strftime("%Y-%m-%d"))
+            writeCharts(country, start_date.strftime("%Y-%m-%d"))
+            start_date += delta
+
+    else:
+        # in case of one-time mode
+        DriversSize = 1
+        DriversPool = [Driver() for _ in range(DriversSize)]
+
+        loginProcess(random.randint(10000, 99999))
+
+        writeCharts(country, None)
+
+
+if __name__ == '__main__s':
 
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
