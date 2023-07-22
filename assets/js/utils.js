@@ -140,8 +140,9 @@ $(function () {
             return;
         }
 
-        $("div.spanner").addClass("show");
-        $("div.overlay").addClass("show");
+        $("#spinner").css("visibility", "visible");
+        $("div.___spanner").addClass("___show");
+        $("div.___overlay").addClass("___show");
 
         fetch($(this).prop("action"), {
             method: "POST",
@@ -158,8 +159,9 @@ $(function () {
                 data: formData,
             }),
         }).then(() => {
-            $("div.spanner").removeClass("show");
-            $("div.overlay").removeClass("show");
+            $("#spinner").css("visibility", "hidden");
+            $("div.___spanner").removeClass("___show");
+            $("div.___overlay").removeClass("___show");
         });
     });
 });
