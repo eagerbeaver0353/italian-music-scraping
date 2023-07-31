@@ -22,7 +22,7 @@ def convert_date(date_string):
             # Set the date to the last day of the month
             _, last_day = monthrange(date.year, date.month)
             date = date.replace(day=last_day)
-    return date
+    return date.date()
 
 def get_next_date(date_string):
     if len(date_string) == 4:
@@ -55,6 +55,6 @@ def extract_date(string):
 
     if date_match:
         extracted_date = date_match.group(0)
-        return datetime.strptime(extract_date, "%Y-%m-%d").date()
+        return datetime.strptime(extracted_date, "%Y-%m-%d").date()
     else:
         return datetime.now().date()

@@ -20,6 +20,8 @@ def combineMusicsFromCharts(musicChannels, month, start_date, end_date):
     output_dir = f'{os.path.dirname(os.path.abspath(__file__))}/output/{month}'
 
     for channelName in channels:
+        if channel_weights[channelName] == 0:
+            continue
         output_each_channel = f'{output_dir}/{channelName}'
         if os.path.exists(output_each_channel):
             # check {channelName} files & title list
@@ -108,22 +110,22 @@ def generate_unified_chart(start_date, end_date, _channel_weights):
     global channel_weights
     channel_weights = _channel_weights
 
-    now = datetime.datetime.now()
+    now = datetime.now()
 
-    print("Please input month. Default would be this month")
-    analyze_month = ""
-    while True:
-        analyze_month = input("target month (i.e 2023-01): ")
-        if (analyze_month == ""):
-            analyze_month = now.strftime("%Y-%m")
+    # print("Please input month. Default would be this month")
+    # analyze_month = ""
+    # while True:
+    #     analyze_month = input("target month (i.e 2023-01): ")
+    #     if (analyze_month == ""):
+    #         analyze_month = now.strftime("%Y-%m")
 
-        try:
-            analyze_month = datetime.datetime.strptime(analyze_month, '%Y-%m')
-        except Exception as err:
-            print("Invalid month string. please try again")
-            print(err)
-            continue
-        break
+    #     try:
+    #         analyze_month = datetime.strptime(analyze_month, '%Y-%m')
+    #     except Exception as err:
+    #         print("Invalid month string. please try again")
+    #         print(err)
+    #         continue
+    #     break
     
     current_date = start_date
     musics = {}
@@ -176,5 +178,4 @@ def generate_unified_chart(start_date, end_date, _channel_weights):
             writer_top_tracks.writerow(row)
             top_tracks_file.flush()
 
-    with open(f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv', 'rb') as file:
-        return file.read()
+    return f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv'

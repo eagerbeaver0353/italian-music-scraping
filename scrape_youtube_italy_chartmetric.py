@@ -73,11 +73,17 @@ def writeCharts(country_id, charts_date):
 
 def scrape_youtube(start_date, end_date):
     global DriversPool
+    global date_string
+    now = datetime.datetime.now()
+    date_string = now.strftime("%Y-%m-%d %H-%M-%S")
+
+    print("======== Starting the App: Youtube ==========")
 
     # Get the command line arguments
     run_mode = "date-range"
 
     # initialize chart metric api object
+    global chartmetricApi
     chartmetricApi = ChartMetricApi()
 
     if (run_mode == "date-range"):
@@ -95,7 +101,7 @@ def scrape_youtube(start_date, end_date):
         start_date = datetime.date(start_date.year, start_date.month, start_date.day)
 
         # Find the next Thursday
-        days_to_thursday = (3 - start_date.weekday()) % 7
+        days_to_thursday = (10 - start_date.weekday()) % 7
         start_date = start_date + datetime.timedelta(days=days_to_thursday)
 
         if end_date is None:
@@ -103,83 +109,83 @@ def scrape_youtube(start_date, end_date):
         delta = datetime.timedelta(days=7)
 
         while start_date <= end_date:
-            print("running for", start_date.strftime("%Y-%m-%d"))
+            print("Youtube running for", start_date.strftime("%Y-%m-%d"))
             writeCharts(country, start_date.strftime("%Y-%m-%d"))
             start_date += delta
 
     else:
         # in case of one-time mode
 
-        print("running for", now.strftime("%Y-%m-%d"))
+        print("Youtube running for", now.strftime("%Y-%m-%d"))
         writeCharts(country, now.strftime("%Y-%m-%d"))
 
 
 
-if __name__ == '__main__s':
+# if __name__ == '__main__s':
 
-    now = datetime.datetime.now()
-    date_string = now.strftime("%Y-%m-%d %H-%M-%S")
+#     now = datetime.datetime.now()
+#     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
 
-    print("======== Starting the App ==========")
+#     print("======== Starting the App ==========")
 
-    # Get the command line arguments
-    mode_arg = "" if not len(sys.argv) > 1 else sys.argv[1] 
+#     # Get the command line arguments
+#     mode_arg = "" if not len(sys.argv) > 1 else sys.argv[1] 
 
-    run_mode = ""
-    if not mode_arg == '--one-time':
-        print("Please select running mode. There are 'date-range' and 'one-time' mode.")
-        while True:
-            res = input("date-range mode? (Y/n): ").lower()
-            if (res == "y" or res == ""):
-                run_mode = "date-range"
-            elif res == "n":
-                run_mode = "one-time"
-            else:
-                print("Invalid input. Please enter 'y' or 'n'.")
-                continue    
-            break
-    else:
-        run_mode = "one-time"
+#     run_mode = ""
+#     if not mode_arg == '--one-time':
+#         print("Please select running mode. There are 'date-range' and 'one-time' mode.")
+#         while True:
+#             res = input("date-range mode? (Y/n): ").lower()
+#             if (res == "y" or res == ""):
+#                 run_mode = "date-range"
+#             elif res == "n":
+#                 run_mode = "one-time"
+#             else:
+#                 print("Invalid input. Please enter 'y' or 'n'.")
+#                 continue    
+#             break
+#     else:
+#         run_mode = "one-time"
 
-    # initialize chart metric api object
-    chartmetricApi = ChartMetricApi()
+#     # initialize chart metric api object
+#     chartmetricApi = ChartMetricApi()
 
-    if (run_mode == "date-range"):
-        # in case of date-range mode
-        print("Please input start date. Default would be the first Friday of this month.")
+#     if (run_mode == "date-range"):
+#         # in case of date-range mode
+#         print("Please input start date. Default would be the first Friday of this month.")
 
-        start_date = None
-        while True:
+#         start_date = None
+#         while True:
         
-            start_date = input("start from (i.e 2023-01-01): ")
-            if (start_date == ""):
-                first_day = datetime.date(now.year, now.month, 1)
-                start_date = first_day.strftime("%Y-%m-%d")
+#             start_date = input("start from (i.e 2023-01-01): ")
+#             if (start_date == ""):
+#                 first_day = datetime.date(now.year, now.month, 1)
+#                 start_date = first_day.strftime("%Y-%m-%d")
 
-            try:
-                start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-            except Exception as err:
-                print("Invalid date string. please try again")
-                print(err)
-                continue
-            break
+#             try:
+#                 start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+#             except Exception as err:
+#                 print("Invalid date string. please try again")
+#                 print(err)
+#                 continue
+#             break
 
-        start_date = datetime.date(start_date.year, start_date.month, start_date.day)
+#         start_date = datetime.date(start_date.year, start_date.month, start_date.day)
 
-        # Find the next Thursday
-        days_to_thursday = (3 - start_date.weekday()) % 7
-        start_date = start_date + datetime.timedelta(days=days_to_thursday)
+#         # Find the next Thursday
+#         days_to_thursday = (3 - start_date.weekday()) % 7
+#         start_date = start_date + datetime.timedelta(days=days_to_thursday)
 
-        end_date = datetime.date(now.year, now.month, now.day)
-        delta = datetime.timedelta(days=7)
+#         end_date = datetime.date(now.year, now.month, now.day)
+#         delta = datetime.timedelta(days=7)
 
-        while start_date <= end_date:
-            print("running for", start_date.strftime("%Y-%m-%d"))
-            writeCharts(country, start_date.strftime("%Y-%m-%d"))
-            start_date += delta
+#         while start_date <= end_date:
+#             print("running for", start_date.strftime("%Y-%m-%d"))
+#             writeCharts(country, start_date.strftime("%Y-%m-%d"))
+#             start_date += delta
 
-    else:
-        # in case of one-time mode
+#     else:
+#         # in case of one-time mode
 
-        print("running for", now.strftime("%Y-%m-%d"))
-        writeCharts(country, now.strftime("%Y-%m-%d"))
+#         print("running for", now.strftime("%Y-%m-%d"))
+#         writeCharts(country, now.strftime("%Y-%m-%d"))

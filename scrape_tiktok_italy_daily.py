@@ -163,7 +163,7 @@ def scrape_tiktok(start_date, end_date):
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
 
-    print("======== Starting the App ==========")
+    print("======== Starting the App: Tiktok ==========")
 
     # Get the command line arguments
     run_mode = "date-range"
@@ -230,94 +230,94 @@ def scrape_tiktok(start_date, end_date):
         writeCharts(country, ch_date.strftime("%Y-%m-%d"), dateType)
 
 
-if __name__ == '__main__s':
+# if __name__ == '__main__s':
 
-    now = datetime.datetime.now()
-    date_string = now.strftime("%Y-%m-%d %H-%M-%S")
+#     now = datetime.datetime.now()
+#     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
 
-    print("======== Starting the App ==========")
+#     print("======== Starting the App ==========")
 
-    # Get the command line arguments
-    mode_arg = "" if not len(sys.argv) > 1 else sys.argv[1] 
+#     # Get the command line arguments
+#     mode_arg = "" if not len(sys.argv) > 1 else sys.argv[1] 
 
-    run_mode = ""
-    if not mode_arg == '--one-time':
-        print("Please select running mode. There are 'date-ranger' and 'one-time' mode.")
-        while True:
-            res = input("date-range mode? (Y/n): ").lower()
-            if (res == "y" or res == ""):
-                run_mode = "date-range"
-            elif res == "n":
-                run_mode = "one-time"
-            else:
-                print("Invalid input. Please enter 'y' or 'n'.")
-                continue    
-            break
-    else:
-        run_mode = "one-time"
+#     run_mode = ""
+#     if not mode_arg == '--one-time':
+#         print("Please select running mode. There are 'date-ranger' and 'one-time' mode.")
+#         while True:
+#             res = input("date-range mode? (Y/n): ").lower()
+#             if (res == "y" or res == ""):
+#                 run_mode = "date-range"
+#             elif res == "n":
+#                 run_mode = "one-time"
+#             else:
+#                 print("Invalid input. Please enter 'y' or 'n'.")
+#                 continue    
+#             break
+#     else:
+#         run_mode = "one-time"
 
-    if (run_mode == "date-range"):
-        # in case of date-range mode
-        print("Please input start date. Default would be the first day of this month.")
+#     if (run_mode == "date-range"):
+#         # in case of date-range mode
+#         print("Please input start date. Default would be the first day of this month.")
 
-        start_date = None
-        while True:
+#         start_date = None
+#         while True:
         
-            start_date = input("start from (i.e 2023-01-01): ")
-            if (start_date == ""):
-                first_day = datetime.date(now.year, now.month, 1)
-                start_date = first_day.strftime("%Y-%m-%d")
+#             start_date = input("start from (i.e 2023-01-01): ")
+#             if (start_date == ""):
+#                 first_day = datetime.date(now.year, now.month, 1)
+#                 start_date = first_day.strftime("%Y-%m-%d")
 
-            try:
-                start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-            except Exception as err:
-                print("Invalid date string. please try again")
-                print(err)
-                continue
-            break
+#             try:
+#                 start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+#             except Exception as err:
+#                 print("Invalid date string. please try again")
+#                 print(err)
+#                 continue
+#             break
 
-        start_date = datetime.date(start_date.year, start_date.month, start_date.day)
-        end_date = datetime.date(now.year, now.month, now.day)
-        delta = datetime.timedelta(days=1)
+#         start_date = datetime.date(start_date.year, start_date.month, start_date.day)
+#         end_date = datetime.date(now.year, now.month, now.day)
+#         delta = datetime.timedelta(days=1)
 
-        DriversSize = 1
-        DriversPool = [Driver() for _ in range(DriversSize)]
+#         DriversSize = 1
+#         DriversPool = [Driver() for _ in range(DriversSize)]
 
-        loginProcess(random.randint(10000, 99999))
+#         loginProcess(random.randint(10000, 99999))
 
-        while start_date <= end_date:
-            print("running for", start_date.strftime("%Y-%m-%d"))
-            writeCharts(country, start_date.strftime("%Y-%m-%d"), dateType)
-            start_date += delta
+#         while start_date <= end_date:
+#             print("running for", start_date.strftime("%Y-%m-%d"))
+#             writeCharts(country, start_date.strftime("%Y-%m-%d"), dateType)
+#             start_date += delta
 
-    else:
-        # in case of one-time mode
-        print("Please input date. Default would be Today")
+#     else:
+#         # in case of one-time mode
+#         print("Please input date. Default would be Today")
 
-        ch_date = None
-        while True:
+#         ch_date = None
+#         while True:
         
-            ch_date = input("date (i.e 2023-01-01): ")
-            if (ch_date == ""):
-                ch_date = now.strftime("%Y-%m-%d")
+#             ch_date = input("date (i.e 2023-01-01): ")
+#             if (ch_date == ""):
+#                 ch_date = now.strftime("%Y-%m-%d")
 
-            try:
-                ch_date = datetime.datetime.strptime(ch_date, '%Y-%m-%d')
-            except Exception as err:
-                print("Invalid date string. please try again")
-                print(err)
-                continue
-            break
+#             try:
+#                 ch_date = datetime.datetime.strptime(ch_date, '%Y-%m-%d')
+#             except Exception as err:
+#                 print("Invalid date string. please try again")
+#                 print(err)
+#                 continue
+#             break
 
-        ch_date = datetime.date(ch_date.year, ch_date.month, ch_date.day)
+#         ch_date = datetime.date(ch_date.year, ch_date.month, ch_date.day)
 
-        DriversSize = 1
-        DriversPool = [Driver() for _ in range(DriversSize)]
-        # executor = concurrent.futures.ThreadPoolExecutor(max_workers=DriversSize)
-        futures = []
+#         DriversSize = 1
+#         DriversPool = [Driver() for _ in range(DriversSize)]
+#         # executor = concurrent.futures.ThreadPoolExecutor(max_workers=DriversSize)
+#         futures = []
 
-        initial_row = {'process': "login", "description": "do login"}
+#         initial_row = {'process': "login", "description": "do login"}
 
-        loginProcess(random.randint(10000, 99999))
+#         loginProcess(random.randint(10000, 99999))
 
-        writeCharts(country, ch_date.strftime("%Y-%m-%d"), dateType)
+#         writeCharts(country, ch_date.strftime("%Y-%m-%d"), dateType)

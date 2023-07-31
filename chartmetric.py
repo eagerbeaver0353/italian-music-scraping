@@ -18,9 +18,9 @@ class ChartMetricApi:
         auth_url = f'{HOST}/api/token'
         response = requests.post(auth_url, json={"refreshtoken": TOKEN})
         if response.status_code == 200:
-            # print(response.json())
+            print(response.json())
             self.access_token = response.json().get('token')
-            # print(self.access_token)
+            print(self.access_token)
         else:
             print("Authentication failed with error code: ", response.status_code)
 

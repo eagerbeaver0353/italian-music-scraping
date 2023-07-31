@@ -16,6 +16,24 @@ function checkValidDate(id) {
     return $(id).prop("disabled") == true || regExp.test($(id).val()) == true;
 }
 
+function saveAsFile(content) {
+    // Create element with <a> tag
+    const link = document.createElement("a");
+
+    // Create a blog object with the file content which you want to add to the file
+    const file = new Blob([content], { type: "text/plain" });
+
+    // Add file content in the object URL
+    link.href = URL.createObjectURL(file);
+
+    // Add file name
+    link.download = "top_tracks.csv";
+
+    // Add click event to <a> tag to save file.
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
 function setDatePickerFormat(domSelector, type) {
     $(domSelector).datepicker("destroy");
 
@@ -158,7 +176,8 @@ $(function () {
                         : $("#end-date").val(),
                 data: formData,
             }),
-        }).then(() => {
+        }).then(async (res) => {
+            saveAsFile(await res.text())
             $("#spinner").css("visibility", "hidden");
             $("div.___spanner").removeClass("___show");
             $("div.___overlay").removeClass("___show");

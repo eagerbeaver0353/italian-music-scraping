@@ -1,55 +1,71 @@
-import http.server
-import socketserver
+from flask import Flask, request, send_from_directory, send_file,  Response, abort
 import json
-
+import os
 from scrape_radio_italy import scrape_radio
 from scrape_shazam_italy import scrape_shazam
 from scrape_spotify_italy_daily import scrape_spotify
-from scrape_tiktok_italy_daily import scrape_tiktok
+from scrape_tiktok_italy_chartmetric import scrape_tiktok
 from scrape_youtube_italy_chartmetric import scrape_youtube
 from custom_utils import convert_date, get_next_date
 from unified_chart import generate_unified_chart
+app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return send_file('index.html')
 
-PORT = 8000
- # Define the request handler class
-class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
-    def do_POST(self):
-        # Handle API endpoint
-        content_length = int(self.headers['Content-Length'])
-        request_body = self.rfile.read(content_length)
-        # Process the request body as needed
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), filename)
 
-        data = json.loads(request_body.decode('utf-8'))
-        if 'end_date' in data:
-            pass
-        else:
-            data["end_date"] = None
-            
-        start_date = convert_date(data["start_date"])
-        end_date = get_next_date(data["start_date"]) if data["end_date"] is None else get_next_date(data["end_date"])
-        
-        start_date_fmt = start_date.strftime("%Y-%m-%d")
-        
+@app.post('/api')
+def handle_request():
+    # Handle API endpoint
+    content_length = int(request.headers['Content-Length'])
+    request_body = request.get_data(as_text=True)
+    # Process the request body as needed
+    data = json.loads(request_body)
+
+    if 'end_date' in data:
+        pass
+    else:
+        data["end_date"] = None
+
+    start_date = convert_date(data["start_date"])
+    end_date = get_next_date(data["start_date"]) if data["end_date"] is None else get_next_date(data["end_date"])
+    start_date_fmt = start_date.strftime("%Y-%m-%d")
+    if data["data"]["radio"] > 0:
         scrape_radio(start_date_fmt, end_date)
+    
+    if data["data"]["shazam"] > 0:
         scrape_shazam(start_date_fmt, end_date)
+    
+    if data["data"]["spotify"] > 0:
         scrape_spotify(start_date_fmt, end_date)
+    
+    if data["data"]["tiktok"] > 0:
         scrape_tiktok(start_date_fmt, end_date)
+    
+    if data["data"]["youtube"] > 0:
         scrape_youtube(start_date_fmt, end_date)
-        
-        self.send_response(200)
-        # Set the response headers
-        self.send_header('Content-type', 'application/octet-stream')
-        self.send_header('Content-Disposition', 'attachment; filename="filename.extension"')
-        self.end_headers()
-        
-        self.wfile.write(generate_unified_chart(start_date, end_date, data["data"]))
 
-    def do_GET(self):
-        # Serve static files
-        return http.server.SimpleHTTPRequestHandler.do_GET(self)
+    file_path = generate_unified_chart(start_date, end_date, data["data"])
+    print(file_path)
 
- # Create an HTTP server with the custom request handler
-with socketserver.TCPServer(("", PORT), MyRequestHandler) as httpd:
-    print(f"Server started on port {PORT}")
-    httpd.serve_forever()
+    try:
+        with open(file_path, 'r') as file:
+            # Read the contents of the file
+            return send_file(
+                file_path,
+                mimetype="text/csv",
+                as_attachment=True,
+                download_name="top_tracks.csv")
+                # headers={"Content-disposition":
+                #         "attachment; filename=top_tracks.csv"})
+    except:
+        return abort(404)
+
+    return send_file(file_path, as_attachment=True)
+ 
+if __name__ == '__main__':
+    app.run('localhost', 8000)
