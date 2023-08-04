@@ -48,3 +48,33 @@ class ChartMetricApi:
         else:
             print("Get TikTok charts with error code: ", res.status_code)
             return None
+        
+    def get_shazam_charts_italy(self, chart_date):
+
+        res = self.get('/api/charts/shazam?date=' + chart_date + '&offset=0&latest=false&country_code=IT')
+
+        if res.status_code == 200:
+            return res.json().get('obj')
+        else:
+            print("Get Shazam charts with error code: ", res.status_code)
+            return None
+        
+    def get_spotify_charts_italy(self, chart_date):
+
+        res = self.get('/api/charts/spotify?date=' + chart_date + '&offset=0&latest=false&country_code=IT&type=regional')
+
+        if res.status_code == 200:
+            return res.json().get('obj')
+        else:
+            print("Get Spotify charts with error code: ", res.status_code)
+            return None
+    
+    def get_airplay_charts_italy(self, chart_date):
+
+        res = self.get('/api/charts/airplay/tracks?date=' + chart_date + '&since=' + chart_date + '&offset=0&latest=false&country_code=IT&duration=daily')
+
+        if res.status_code == 200:
+            return res.json().get('obj')
+        else:
+            print("Get Airplay charts with error code: ", res.status_code)
+            return None

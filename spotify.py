@@ -49,6 +49,8 @@ class SpotifyApi:
         searchResult = self.search(q)
 
         if searchResult is not None and len(searchResult['items']) > 0:
+            if searchResult['items'][0]['external_ids'] is None:
+                return None
             isrcCode = searchResult['items'][0]['external_ids']['isrc']
             return isrcCode
 

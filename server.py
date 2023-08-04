@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, send_file,  Response, abort
+from flask import Flask, jsonify, request, send_from_directory, send_file,  Response, abort
 import json
 import os
 from scrape_radio_italy import scrape_radio
@@ -20,6 +20,7 @@ def serve_static(filename):
 
 @app.post('/api')
 def handle_request():
+    print("AAA")
     # Handle API endpoint
     content_length = int(request.headers['Content-Length'])
     request_body = request.get_data(as_text=True)
@@ -31,26 +32,33 @@ def handle_request():
     else:
         data["end_date"] = None
 
-    start_date = convert_date(data["start_date"])
-    end_date = get_next_date(data["start_date"]) if data["end_date"] is None else get_next_date(data["end_date"])
-    start_date_fmt = start_date.strftime("%Y-%m-%d")
-    if data["data"]["radio"] > 0:
-        scrape_radio(start_date_fmt, end_date)
-    
-    if data["data"]["shazam"] > 0:
-        scrape_shazam(start_date_fmt, end_date)
-    
-    if data["data"]["spotify"] > 0:
-        scrape_spotify(start_date_fmt, end_date)
-    
-    if data["data"]["tiktok"] > 0:
-        scrape_tiktok(start_date_fmt, end_date)
-    
-    if data["data"]["youtube"] > 0:
-        scrape_youtube(start_date_fmt, end_date)
+    try:
+        start_date = convert_date(data["start_date"])
+        end_date = get_next_date(data["start_date"]) if data["end_date"] is None else get_next_date(data["end_date"])
+        start_date_fmt = start_date.strftime("%Y-%m-%d")
+        if data["data"]["radio"] > 0:
+            scrape_radio(start_date_fmt, end_date)
+        
+        if data["data"]["shazam"] > 0:
+            scrape_shazam(start_date_fmt, end_date)
+        
+        if data["data"]["spotify"] > 0:
+            scrape_spotify(start_date_fmt, end_date)
+        
+        if data["data"]["tiktok"] > 0:
+            scrape_tiktok(start_date_fmt, end_date)
+        
+        if data["data"]["youtube"] > 0:
+            scrape_youtube(start_date_fmt, end_date)
 
-    file_path = generate_unified_chart(start_date, end_date, data["data"])
-    print(file_path)
+        file_path = generate_unified_chart(start_date, end_date, data["data"])
+        print(file_path)
+    except Exception as e:
+        # Handle the error here
+        error_message = str(e)
+        print("An error occurred:", error_message)
+        # Return the error message as a response if needed
+        return jsonify(error=error_message), 500
 
     try:
         with open(file_path, 'r') as file:
@@ -66,6 +74,12 @@ def handle_request():
         return abort(404)
 
     return send_file(file_path, as_attachment=True)
+
+@app.errorhandler(500)  # Error handler for 500 Internal Server Error
+def internal_server_error(error):
+    print("WWWWWW", error)
+    print(str(error))
+    return jsonify(str(error)), 500
  
 if __name__ == '__main__':
     app.run('localhost', 8000)

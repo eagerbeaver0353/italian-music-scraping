@@ -199,7 +199,7 @@ def scrape_spotify(start_date, end_date):
         loginProcess(random.randint(10000, 99999))
 
         while start_date <= end_date:
-            print("running for", start_date.strftime("%Y-%m-%d"))
+            print("Spotify running for", start_date.strftime("%Y-%m-%d"))
             writeCharts(country, start_date.strftime("%Y-%m-%d"), dateType)
             start_date += delta
 

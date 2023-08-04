@@ -191,7 +191,7 @@ def scrape_shazam(start_date, end_date) :
         loginProcess(random.randint(10000, 99999))
 
         while start_date <= end_date:
-            print("running for", start_date.strftime("%Y-%m-%d"))
+            print("Shazam running for", start_date.strftime("%Y-%m-%d"))
             writeCharts(country, start_date.strftime("%Y-%m-%d"))
             start_date += delta
 

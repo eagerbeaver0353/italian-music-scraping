@@ -4,6 +4,6 @@ python_crontab==2.7.1
 requests==2.28.1
 rich==13.4.2
 selenium==4.9.1
-webdriver_manager==3.8.6
+webdriver_manager==4.0.0
 ytmusicapi==1.0.2
-flask==2.3.2
+flask==2.1.2
