@@ -1,4 +1,4 @@
-let channels = ["spotify", "youtube", "shazam", "tiktok", "radio"];
+let channels = ["spotify", "youtube", "shazam", "tiktok" /*, "radio"*/];
 
 let weightIds = channels.map((item) => `#${item}-weight`);
 let channelIds = channels.map((item) => `#${item}-checkbox`);
@@ -21,13 +21,13 @@ function saveAsFile(content) {
     const link = document.createElement("a");
 
     // Create a blog object with the file content which you want to add to the file
-    const file = new Blob([content], { type: "text/plain" });
+    const file = new Blob([content], { type: "application/zip" });
 
     // Add file content in the object URL
     link.href = URL.createObjectURL(file);
 
     // Add file name
-    link.download = "top_tracks.csv";
+    link.download = "result.zip";
 
     // Add click event to <a> tag to save file.
     link.click();
@@ -176,11 +176,14 @@ $(function () {
                         : $("#end-date").val(),
                 data: formData,
             }),
-        }).then(async (res) => {
-            saveAsFile(await res.text())
-            $("#spinner").css("visibility", "hidden");
-            $("div.___spanner").removeClass("___show");
-            $("div.___overlay").removeClass("___show");
-        });
+        })
+            .then((res) => res.blob())
+            .then((blob) => saveAs(blob, "result.zip"))
+            .catch((err) => alert(err))
+            .finally(() => {
+                $("#spinner").css("visibility", "hidden");
+                $("div.___spanner").removeClass("___show");
+                $("div.___overlay").removeClass("___show");
+            });
     });
 });

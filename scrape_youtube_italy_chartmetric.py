@@ -21,19 +21,6 @@ def getCharts(country_id, charts_date, random_id):
     return chartmetricApi.get_youtube_charts_italy(charts_date)
 
 def writeCharts(country_id, charts_date):
-
-    charts = getCharts(country_id, charts_date, random.randint(10000, 99999))
-
-    if charts is None:
-        return
-
-    rows = charts['data']
-    length = charts['length']
-
-    if len(rows) == 0:
-        print("Whoops! no data for the chart you are looking for")
-        return
-    
     chart_date_obj = datetime.datetime.strptime(charts_date, '%Y-%m-%d')
     chart_month = chart_date_obj.strftime('%Y-%m')
     output_dir = f'{os.path.dirname(os.path.abspath(__file__))}/output'
@@ -50,6 +37,18 @@ def writeCharts(country_id, charts_date):
     if os.path.exists(output_path):
         return
 
+    charts = getCharts(country_id, charts_date, random.randint(10000, 99999))
+
+    if charts is None:
+        return
+
+    rows = charts['data']
+    length = charts['length']
+
+    if len(rows) == 0:
+        print("Whoops! no data for the chart you are looking for")
+        return
+
     output_file = open(output_path, 'w+', newline='', encoding='utf8')
     writer = csv.writer(output_file)
 
@@ -59,15 +58,16 @@ def writeCharts(country_id, charts_date):
     for index, row in enumerate(rows):
         if (row is None):
             continue
-        artists = []
-        if row['artists'] is not None:
-            for artist in row['artists']:
-                artists.append(artist['name'])
-        pos = row['position']
+        artists = row.get('artists', [])
+        while None in artists:
+            artists.remove(None)
+        artists = list(map(lambda x: x['name'], artists))
+
+        pos = row.get('position', int(1e5))
         evo = 0
         if row['pre_rank'] is not None:
             evo = row['pre_rank'] - row['position']
-        writer.writerow([index+1, pos, evo, row['name'], ", ".join(artists), row['isrc'], row['view_count']])
+        writer.writerow([index+1, pos, evo, row['name'], "& ".join(artists), row.get('isrc', ""), row.get('view_count', 0)])
         output_file.flush()
         # print(row)
 
@@ -101,12 +101,13 @@ def scrape_youtube(start_date, end_date):
         start_date = datetime.date(start_date.year, start_date.month, start_date.day)
 
         # Find the next Thursday
-        days_to_thursday = (10 - start_date.weekday()) % 7
-        start_date = start_date + datetime.timedelta(days=days_to_thursday)
+        # days_to_thursday = (10 - start_date.weekday()) % 7
+        # start_date = start_date + datetime.timedelta(days=days_to_thursday)
 
         if end_date is None:
             end_date = datetime.date(now.year, now.month, now.day)
-        delta = datetime.timedelta(days=7)
+        # delta = datetime.timedelta(days=7)
+        delta = datetime.timedelta(days=1)
 
         while start_date <= end_date:
             print("Youtube running for", start_date.strftime("%Y-%m-%d"))

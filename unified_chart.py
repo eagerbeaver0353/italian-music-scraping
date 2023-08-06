@@ -8,12 +8,13 @@ from custom_utils import extract_date
 title_index = {
     "spotify": 1,
     "shazam": 1,
-    "radio": 1,
+    # "radio": 1,
     "youtube": 3,
     "tiktok": 2,
 }
 
-channels = ['spotify','youtube','tiktok','radio','shazam']
+# channels = ['spotify','youtube','tiktok','radio','shazam']
+channels = ['spotify','youtube','tiktok','shazam']
 
 # get combine music tracks result from all channels of Charts
 def combineMusicsFromCharts(musicChannels, month, start_date, end_date):
@@ -69,6 +70,7 @@ def calculate_monthly_position(musicChannels):
             monthly_position = 0
             if channel == "spotify" or channel == "shazam":
                 monthly_position = round(total_points / 7, 2)
+                # monthly_position = total_points
             else:
                 monthly_position = total_points
             musicChannels[title]['monthly_positions'][channel] = monthly_position
@@ -156,8 +158,10 @@ def generate_unified_chart(start_date, end_date, _channel_weights):
     end_date_fmt = end_date.strftime("%Y-%m-%d")
 
     output_dir = f'{os.path.dirname(os.path.abspath(__file__))}/output'
-    sorted_tracks_file = open(f'{output_dir}/{start_date_fmt}_{end_date_fmt}_sorted_music_tracks.csv', 'w+', newline='', encoding='utf8')
-    top_tracks_file = open(f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv', 'w+', newline='', encoding='utf8')
+    # sorted_tracks_file = open(f'{output_dir}/{start_date_fmt}_{end_date_fmt}_sorted_music_tracks.csv', 'w+', newline='', encoding='utf8')
+    # top_tracks_file = open(f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv', 'w+', newline='', encoding='utf8')
+    sorted_tracks_file = open(f'{output_dir}/sorted_music_tracks.csv', 'w+', newline='', encoding='utf8')
+    top_tracks_file = open(f'{output_dir}/top_music_tracks.csv', 'w+', newline='', encoding='utf8')
     LIMIT_TOP_TRACK = 50
     writer_sorted_tracks = csv.writer(sorted_tracks_file)
     writer_top_tracks = csv.writer(top_tracks_file)
@@ -178,4 +182,5 @@ def generate_unified_chart(start_date, end_date, _channel_weights):
             writer_top_tracks.writerow(row)
             top_tracks_file.flush()
 
-    return f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv'
+    # return f'{output_dir}/{start_date_fmt}_{end_date_fmt}_top_music_tracks.csv'
+    return f'top_music_tracks.csv'

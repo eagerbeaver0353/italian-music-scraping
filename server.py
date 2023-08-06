@@ -2,11 +2,11 @@ from flask import Flask, jsonify, request, send_from_directory, send_file,  Resp
 import json
 import os
 from scrape_radio_italy import scrape_radio
-from scrape_shazam_italy import scrape_shazam
-from scrape_spotify_italy_daily import scrape_spotify
+from scrape_shazam_italy_chartmetric import scrape_shazam
+from scrape_spotify_italy_chartmetric import scrape_spotify
 from scrape_tiktok_italy_chartmetric import scrape_tiktok
 from scrape_youtube_italy_chartmetric import scrape_youtube
-from custom_utils import convert_date, get_next_date
+from custom_utils import convert_date, get_next_date, zip_files_with_condition
 from unified_chart import generate_unified_chart
 app = Flask(__name__)
 
@@ -36,8 +36,8 @@ def handle_request():
         start_date = convert_date(data["start_date"])
         end_date = get_next_date(data["start_date"]) if data["end_date"] is None else get_next_date(data["end_date"])
         start_date_fmt = start_date.strftime("%Y-%m-%d")
-        if data["data"]["radio"] > 0:
-            scrape_radio(start_date_fmt, end_date)
+        # if data["data"]["radio"] > 0:
+        #     scrape_radio(start_date_fmt, end_date)
         
         if data["data"]["shazam"] > 0:
             scrape_shazam(start_date_fmt, end_date)
@@ -51,8 +51,10 @@ def handle_request():
         if data["data"]["youtube"] > 0:
             scrape_youtube(start_date_fmt, end_date)
 
-        file_path = generate_unified_chart(start_date, end_date, data["data"])
-        print(file_path)
+        generate_unified_chart(start_date, end_date, data["data"])
+        file_path = f'{os.path.dirname(os.path.abspath(__file__))}/result.zip'
+        zip_files_with_condition(f'{os.path.dirname(os.path.abspath(__file__))}/output', file_path, start_date, end_date, ["sorted_music_tracks.csv", "top_music_tracks.csv"])
+        
     except Exception as e:
         # Handle the error here
         error_message = str(e)
@@ -65,9 +67,9 @@ def handle_request():
             # Read the contents of the file
             return send_file(
                 file_path,
-                mimetype="text/csv",
-                as_attachment=True,
-                download_name="top_tracks.csv")
+                mimetype="application/zip",
+                as_attachment=True
+            )
                 # headers={"Content-disposition":
                 #         "attachment; filename=top_tracks.csv"})
     except:

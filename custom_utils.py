@@ -1,6 +1,8 @@
 import re
 from datetime import datetime, timedelta
 from calendar import monthrange
+import zipfile
+import os
 
 def convert_date(date_string):
     # Parse the date string
@@ -14,6 +16,7 @@ def convert_date(date_string):
         date = date.replace(day=1)
     elif len(date_string) == 10:
         date = datetime.strptime(date_string, "%Y-%m-%d")
+        return date.date()
         # Check if the day is not set
         if date.day == 1:
             # Set the date to the first day of the month
@@ -58,3 +61,19 @@ def extract_date(string):
         return datetime.strptime(extracted_date, "%Y-%m-%d").date()
     else:
         return datetime.now().date()
+
+def match_date(string, start_date, end_date):
+    date_match = re.search(r'\d{4}-\d{2}-\d{2}', string)
+    if date_match:
+        date_val = datetime.strptime(date_match.group(0), "%Y-%m-%d").date()
+        return start_date <= date_val < end_date
+    else:
+        return False
+    
+def zip_files_with_condition(source_dir, destination_zip, start_date, end_date, exceptional_files=[]):
+    with zipfile.ZipFile(destination_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(source_dir):
+            for file in files:
+                file_path = os.path.join(root, file)
+                if match_date(file, start_date, end_date) or file in exceptional_files:
+                    zipf.write(file_path, os.path.relpath(file_path, source_dir))

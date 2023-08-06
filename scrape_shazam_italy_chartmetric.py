@@ -9,7 +9,7 @@ from chartmetric import ChartMetricApi
 import os
 import sys
 
-category = "tiktok"
+category = "shazam"
 country = "Italy"
 
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ WAIT_TIME_LIMIT = int(os.getenv('WAIT_TIME_LIMIT'))
 
 def getCharts(country_id, charts_date, random_id):
 
-    return chartmetricApi.get_tiktok_charts_italy(charts_date)
+    return chartmetricApi.get_shazam_charts_italy(charts_date)
 
 def writeCharts(country_id, charts_date):
     chart_date_obj = datetime.datetime.strptime(charts_date, '%Y-%m-%d')
@@ -52,7 +52,7 @@ def writeCharts(country_id, charts_date):
     output_file = open(output_path, 'w+', newline='', encoding='utf8')
     writer = csv.writer(output_file)
 
-    writer.writerow(["Pos", "Evo", "Titolo", "Artista", "ISRC"])
+    writer.writerow(["Pos", "Titolo", "Artista", "ISRC"])
     output_file.flush()
 
     for index, row in enumerate(rows):
@@ -62,20 +62,20 @@ def writeCharts(country_id, charts_date):
         while None in artists:
             artists.remove(None)
         artists = list(map(lambda x: x['name'], artists))
-        
+
         pos = row.get('rank', int(1e5))
         evo = 0
         if row['pre_rank'] is not None:
             evo = row['pre_rank'] - row['rank']
-        writer.writerow([pos, evo, row['name'], "& ".join(artists), row.get('isrc', "")])
+        writer.writerow([pos, row['name'], "& ".join(artists), row.get('isrc', "")])
         output_file.flush()
         # print(row)
 
-def scrape_tiktok(start_date, end_date):
+def scrape_shazam(start_date, end_date):
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
 
-    print("======== Starting the App: Tiktok ==========")
+    print("======== Starting the App: Shazam ==========")
 
     # Get the command line arguments
     run_mode = "date-range"
@@ -108,14 +108,14 @@ def scrape_tiktok(start_date, end_date):
         delta = datetime.timedelta(days=1)
 
         while start_date <= end_date:
-            print("Tiktok running for", start_date.strftime("%Y-%m-%d"))
+            print("Shazam running for", start_date.strftime("%Y-%m-%d"))
             writeCharts(country, start_date.strftime("%Y-%m-%d"))
             start_date += delta
 
     else:
         # in case of one-time mode
 
-        print("Tiktok running for", now.strftime("%Y-%m-%d"))
+        print("Shazam running for", now.strftime("%Y-%m-%d"))
         writeCharts(country, now.strftime("%Y-%m-%d"))
 
 
@@ -125,7 +125,7 @@ if __name__ == '__main__s':
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d %H-%M-%S")
 
-    print("======== Starting the App: Tiktok ==========")
+    print("======== Starting the App: Shazam ==========")
 
     # Get the command line arguments
     mode_arg = "" if not len(sys.argv) > 1 else sys.argv[1] 

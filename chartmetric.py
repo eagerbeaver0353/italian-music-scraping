@@ -61,7 +61,7 @@ class ChartMetricApi:
         
     def get_spotify_charts_italy(self, chart_date):
 
-        res = self.get('/api/charts/spotify?date=' + chart_date + '&offset=0&latest=false&country_code=IT&type=regional')
+        res = self.get('/api/charts/spotify?date=' + chart_date + '&offset=0&latest=false&country_code=IT&type=regional&interval=daily')
 
         if res.status_code == 200:
             return res.json().get('obj')
