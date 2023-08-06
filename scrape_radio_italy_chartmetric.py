@@ -66,7 +66,7 @@ def writeCharts(country_id, charts_date):
         evo = 0
         if row['pre_rank'] is not None:
             evo = row['pre_rank'] - row['rank']
-        writer.writerow([pos, row['name'], ", ".join(artists), row.get('isrc', "")])
+        writer.writerow([pos, row['name'], " &".join(artists), row.get('isrc', "")])
         output_file.flush()
         # print(row)
 
@@ -118,6 +118,11 @@ def scrape_radio(start_date, end_date):
         writeCharts(country, now.strftime("%Y-%m-%d"))
 
 
+
+if __name__ == '__main__':
+    today = datetime.datetime.date()
+    tomorrow = today + datetime.timedelta(days = 1)
+    scrape_radio(today, tomorrow)
 
 if __name__ == '__main__s':
 

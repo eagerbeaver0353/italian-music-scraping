@@ -67,7 +67,7 @@ def writeCharts(country_id, charts_date):
         evo = 0
         if row['pre_rank'] is not None:
             evo = row['pre_rank'] - row['position']
-        writer.writerow([index+1, pos, evo, row['name'], "& ".join(artists), row.get('isrc', ""), row.get('view_count', 0)])
+        writer.writerow([index+1, pos, evo, row['name'], " &".join(artists), row.get('isrc', ""), row.get('view_count', 0)])
         output_file.flush()
         # print(row)
 
@@ -121,6 +121,10 @@ def scrape_youtube(start_date, end_date):
         writeCharts(country, now.strftime("%Y-%m-%d"))
 
 
+if __name__ == '__main__':
+    today = datetime.datetime.date()
+    tomorrow = today + datetime.timedelta(days = 1)
+    scrape_youtube(today, tomorrow)
 
 # if __name__ == '__main__s':
 
